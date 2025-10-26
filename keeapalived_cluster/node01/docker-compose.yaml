@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  keepalived:
+    image: "osixia/keepalived:2.0.19"
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    environment:
+      KEEPALIVED_COMMAND_LINE_ARGUMENTS: >-
+        --log-detail
+    network_mode: host
+    healthcheck:
+      test: nc -z -w 2 127.0.0.53 53
+      interval: 1m
+      timeout: 10s
+      retries: 5
+    volumes:
+      - "./keepalived.cfg:/usr/local/etc/keepalived/keepalived.conf"
+    container_name: keepalived_node01
+    restart: always

@@ -1,0 +1,22 @@
+version: "3"
+
+volumes:
+  patroni-db-volume:
+
+services:
+  patroni:
+    container_name: patroni_node01
+    network_mode: "host"
+    restart: always
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    command: bash -c 'patroni /etc/patroni/postgres.yaml'
+    volumes:
+      - "./postgres.yaml:/etc/patroni/postgres.yaml"
+      - patroni-db-volume:/home/postgresql/data/
+    healthcheck:
+      test: patronictl -c /etc/patroni/postgres.yaml list batman | grep Leader | grep running
+      interval: 30s
+      timeout: 10s
+      retries: 5
